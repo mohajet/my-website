@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMGE - Product Details</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+
+        .product-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-page img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .product-details {
+            max-width: 500px;
+        }
+
+        .product-details h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .product-details p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .color-options label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border 0.3s;
+            border-radius: 10px;
+        }
+
+        .color-options input[type="radio"] {
+            display: none;
+        }
+
+        .color-options input[type="radio"]:checked + label {
+            border: 2px solid #FFA07A;
+        }
+
+        .product-details button {
+            background-color: #FFA07A;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1.2rem;
+        }
+
+        .product-details button:hover {
+            background-color: #FF7F50;
+        }
+
+        .quantity-container {
+            margin-top: 20px;
+        }
+
+        .quantity-container input {
+            width: 60px;
+            padding: 8px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .total-price {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="product-page">
+        <img src="product1.jpg" alt="SMGE">
+        <div class="product-details">
+            <h2>SMGE</h2>
+            <p>95.00 DL</p>
+            <p>كوب العزل الحراري والبرودة مثالي لحفظ المشروبات الساخنة لمدة 12 ساعة والباردة حتى 24 ساعة، بفضل تقنية العزل الفراغي مزدوج الجدران. مصنوع من ستانلس ستيل عالي الجودة، مع تصميم أنيق وغطاء مانع للتسرب يضمن الراحة أثناء التنقل.</p>
+            
+            <!-- Available Colors -->
+            <p>الألوان المتوفرة:</p>
+            <div class="color-options">
+                <input type="radio" id="colorPink" name="color" value="pink">
+                <label for="colorPink" class="pink" style="background-color: pink;"></label>
+
+                <input type="radio" id="colorBeige" name="color" value="beige">
+                <label for="colorBeige" class="beige" style="background-color: beige;"></label>
+
+                <input type="radio" id="colorBlack" name="color" value="black">
+                <label for="colorBlack" class="black" style="background-color: black;"></label>
+
+                <input type="radio" id="colorGray" name="color" value="gray">
+                <label for="colorGray" class="gray" style="background-color: gray;"></label>
+            </div>
+
+            <!-- Quantity Input -->
+            <div class="quantity-container">
+                <label for="quantity">عدد القطع:</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="1">
+            </div>
+
+            <!-- Total Price -->
+            <div class="total-price">
+                <p id="totalPrice">السعر الإجمالي: 95.00 DL</p>
+            </div>
+
+            <button id="addToCart" onclick="addToCart()">إضافة إلى السلة</button>
+        </div>
+    </div>
+
+    <script>
+        // Get elements
+        const quantityInput = document.getElementById('quantity');
+        const totalPriceElement = document.getElementById('totalPrice');
+        const productPrice = 95; // سعر المنتج الواحد
+
+        // Update total price
+        function updateTotalPrice() {
+            const quantity = parseInt(quantityInput.value) || 1;
+            const totalPrice = productPrice * quantity;
+            totalPriceElement.innerHTML = `السعر الإجمالي: ${totalPrice.toFixed(2)} DL`;
+        }
+
+        // Add to cart
+        function addToCart() {
+            const quantity = parseInt(quantityInput.value) || 1;
+            const selectedColor = document.querySelector('input[name="color"]:checked');
+            const color = selectedColor ? selectedColor.value : 'غير محدد';
+            const totalPrice = productPrice * quantity;
+            
+            // Store the cart item details in sessionStorage (or localStorage)
+            const cartItem = {
+                name: "SMGE",
+                color: color,
+                quantity: quantity,
+                price: productPrice,
+                totalPrice: totalPrice
+            };
+            sessionStorage.setItem('cartItem', JSON.stringify(cartItem));
+            
+            // Redirect to cart page
+            window.location.href = 'cart.html';
+        }
+
+        // Update the total price when the quantity changes
+        quantityInput.addEventListener('input', updateTotalPrice);
+
+        // Initial update
+        updateTotalPrice();
+    </script>
+</body>
+</html>

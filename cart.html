@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+
+        .cart-container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .back-to-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #FFA07A;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-to-home:hover {
+            background-color: #FF7F50;
+        }
+
+        .back-to-home svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .cart-item:hover {
+            background-color: #f9f9f9;
+            transform: scale(1.02);
+        }
+
+        .cart-item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .cart-item-details h4 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #444;
+        }
+
+        .cart-item-details p {
+            margin: 0;
+            font-size: 1rem;
+            color: #777;
+        }
+
+        .cart-item-actions {
+            text-align: right;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            font-size: 1rem;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .remove-btn {
+            background-color: #ff4d4f;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background-color: #d9363e;
+        }
+
+        .summary {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .summary p {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 5px 0;
+        }
+
+        .checkout {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .checkout button {
+            background-color: #FFA07A;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .checkout button:hover {
+            background-color: #FF7F50;
+        }
+    </style>
+</head>
+<body>
+    <div class="cart-container">
+        <!-- Back to Home Button -->
+        <a href="index.html" class="back-to-home">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3L1 12h3v9h8v-6h4v6h8v-9h3z"/></svg>
+            العودة إلى الصفحة الرئيسية
+        </a>
+
+        <h2>سلة المشتريات</h2>
+
+        <!-- Cart Items -->
+        <div id="cartItems"></div>
+
+        <!-- Summary -->
+        <div class="summary">
+            <p>الإجمالي: <span id="total">0</span> DL</p>
+        </div>
+
+        <!-- Checkout -->
+        <div class="checkout">
+            <button onclick="checkout()">إتمام الشراء</button>
+        </div>
+    </div>
+
+    <script>
+        const cartItemsContainer = document.getElementById('cartItems');
+        const totalElement = document.getElementById('total');
+        const storedItems = JSON.parse(sessionStorage.getItem('cartItems')) || [];
+
+        function updateCartUI() {
+            cartItemsContainer.innerHTML = ''; // Clear container
+            let total = 0;
+
+            storedItems.forEach((item, index) => {
+                total += item.totalPrice;
+
+                const cartItemElement = document.createElement('div');
+                cartItemElement.classList.add('cart-item');
+
+                cartItemElement.innerHTML = `
+                    <div class="cart-item-details">
+                        <h4>${item.name}</h4>
+                        <p>اللون: ${item.color}</p>
+                        <p>العدد: <input class="quantity-input" type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)"></p>
+                        <p>السعر الإجمالي: ${item.totalPrice.toFixed(2)} DL</p>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="remove-btn" onclick="removeItem(${index})">إزالة</button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(cartItemElement);
+            });
+
+            totalElement.textContent = total.toFixed(2);
+        }
+
+        function updateQuantity(index, newQuantity) {
+            newQuantity = parseInt(newQuantity) || 1;
+            storedItems[index].quantity = newQuantity;
+            storedItems[index].totalPrice = storedItems[index].price * newQuantity;
+            sessionStorage.setItem('cartItems', JSON.stringify(storedItems));
+            updateCartUI();
+        }
+
+        function removeItem(index) {
+            storedItems.splice(index, 1);
+            sessionStorage.setItem('cartItems', JSON.stringify(storedItems));
+            updateCartUI();
+        }
+
+        function checkout() {
+            if (storedItems.length === 0) {
+                alert('سلة المشتريات فارغة!');
+                return;
+            }
+            alert('تم إتمام الشراء بنجاح!');
+            sessionStorage.clear();
+            updateCartUI();
+            window.location.href = 'form.html'; // توجيه إلى صفحة form.html
+        }
+
+        // Initialize UI
+        updateCartUI();
+    </script>
+</body>
+</html>

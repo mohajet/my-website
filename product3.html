@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makeup Bag - Product Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .back-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #FFA07A;
+            font-weight: bold;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .back-icon:hover {
+            background-color: #FFA07A;
+            color: white;
+        }
+        .product-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .product-page img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .product-details {
+            max-width: 500px;
+        }
+        .product-details h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .product-details p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .color-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .color-options label {
+            width: 50px;
+            height: 50px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        .color-options input[type="radio"] {
+            display: none;
+        }
+        .color-options input[type="radio"]:checked + label {
+            border: 2px solid #FFA07A;
+        }
+        .quantity-container {
+            margin-top: 20px;
+        }
+        .quantity-container input {
+            width: 60px;
+            padding: 8px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .total-price {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .message {
+            margin-top: 20px;
+            color: green;
+            font-size: 1rem;
+            display: none;
+        }
+        button {
+            background-color: #FFA07A;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1.2rem;
+        }
+        button:hover {
+            background-color: #FF7F50;
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Icon -->
+    <a href="index.html" class="back-icon" title="العودة إلى صفحة المنتجات">
+        العودة إلى صفحة المنتجات
+    </a>
+
+    <div class="product-page">
+        <img id="productImage" src="makeupbag-pink.jpg" alt="Makeup Bag">
+        <div class="product-details">
+            <h2>Makeup Bag</h2>
+            <p>48.00 DL</p>
+            <p>حقيبة مكياج عملية بجودة عالية وتصميم أنيق للاستخدام اليومي.</p>
+            <p>الألوان المتوفرة:</p>
+            <div class="color-options">
+                <input type="radio" id="colorPink" name="color" value="White" checked>
+                <label for="colorPink" style="background-image: url('makeupbag-pink.jpg'); background-size: cover;" onclick="updateImage('makeupbag-pink.jpg')"></label>
+            </div>
+            <div class="quantity-container">
+                <label for="quantity">عدد القطع:</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="1">
+            </div>
+            <div class="total-price">
+                <p id="totalPrice">السعر الإجمالي: 48.00 DL</p>
+            </div>
+            <button id="addToCart" onclick="addToCart()">إضافة إلى السلة</button>
+            <p id="successMessage" class="message">تمت الإضافة إلى السلة بنجاح!</p>
+        </div>
+    </div>
+    <script>
+        const quantityInput = document.getElementById('quantity');
+        const totalPriceElement = document.getElementById('totalPrice');
+        const productImage = document.getElementById('productImage');
+        const successMessage = document.getElementById('successMessage');
+        const productPrice = 48;
+
+        function updateImage(imageSrc) {
+            productImage.src = imageSrc;
+        }
+
+        function updateTotalPrice() {
+            const quantity = parseInt(quantityInput.value) || 1;
+            const totalPrice = productPrice * quantity;
+            totalPriceElement.innerHTML = `السعر الإجمالي: ${totalPrice.toFixed(2)} DL`;
+        }
+
+        function addToCart() {
+            const quantity = parseInt(quantityInput.value) || 1;
+            const selectedColor = document.querySelector('input[name="color"]:checked').value; // Get color name
+            const totalPrice = productPrice * quantity;
+
+            const cartItem = {
+                name: "Makeup Bag",
+                color: selectedColor, // Save color name
+                quantity: quantity,
+                price: productPrice,
+                totalPrice: totalPrice
+            };
+
+            const cart = JSON.parse(sessionStorage.getItem('cartItems')) || [];
+            cart.push(cartItem);
+
+            sessionStorage.setItem('cartItems', JSON.stringify(cart));
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+                window.location.href = 'cart.html';
+            }, 1500);
+        }
+
+        quantityInput.addEventListener('input', updateTotalPrice);
+        updateTotalPrice();
+    </script>
+</body>
+</html>
